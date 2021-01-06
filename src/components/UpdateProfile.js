@@ -7,7 +7,9 @@ function UpdateProfile() {
     const emailRef = useRef();
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
-    const {updatePassword, updateEmail, currentUser} = useAuth();
+    const firstNameRef = useRef();
+    const lastNameRef = useRef();
+    const {updatePassword, updateEmail, currentUser, updateUserDoc} = useAuth();
     const history = useHistory();
 
     const [error, setError] = useState("");
@@ -30,6 +32,13 @@ function UpdateProfile() {
             promises.push(updatePassword(passwordRef.current.value));
         }
 
+        const values = {
+            firstName: firstNameRef.current.value,
+            lastName: lastNameRef.current.value
+        }
+
+        promises.push(updateUserDoc(values));
+
         Promise.all(promises).then( () =>{
             history.push("/");
         }).catch( () => {
@@ -45,6 +54,14 @@ function UpdateProfile() {
                 <h2 className="text-center mb-4">Update Profile</h2>
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
+                    <Form.Group id="firstName">
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control type="test" ref={firstNameRef} defaultValue={currentUser.displayName.split(" ")[0]}/>
+                    </Form.Group>
+                    <Form.Group id="lastName">
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control type="text" ref={lastNameRef} defaultValue={currentUser.displayName.split(" ")[1]}/>
+                    </Form.Group>
                     <Form.Group id="email">
                         <Form.Label>Email</Form.Label>
                         <Form.Control type="email" ref={emailRef} required defaultValue={currentUser.email}/>
